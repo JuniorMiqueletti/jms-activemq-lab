@@ -6,6 +6,7 @@ import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
+import javax.jms.MessageListener;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
@@ -55,6 +56,41 @@ public class JmsManager {
 		
 		TextMessage textMessage = session.createTextMessage(message);
 		producer.send(textMessage);
+		
+		return this;
+	}
+
+	/**
+	 * Active Message Listener and when receive a new message,
+	 * cast to Message e print text on console.
+	 * 
+	 * @return JmsManager
+	 */
+	public JmsManager activeMessageListener() {
+		
+		Session session;
+		try {
+			session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+			Destination queue = (Destination) context.lookup("financial");
+			MessageConsumer consumer = session.createConsumer(queue);
+			
+			consumer.setMessageListener(new MessageListener() {
+				
+				@Override
+				public void onMessage(Message message) {
+					TextMessage textMessage  = (TextMessage)message;
+			        try {
+						System.out.println(textMessage.getText());
+					} catch (JMSException e) {
+						e.printStackTrace();
+					}
+				}
+			});
+		} catch (JMSException e) {
+			e.printStackTrace();
+		} catch (NamingException e) {
+			e.printStackTrace();
+		}
 		
 		return this;
 	}
