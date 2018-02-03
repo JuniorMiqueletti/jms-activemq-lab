@@ -1,5 +1,7 @@
 package com.juniormiqueletti.jsmlab;
 
+import java.util.Enumeration;
+
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
@@ -8,6 +10,8 @@ import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
 import javax.jms.MessageProducer;
+import javax.jms.Queue;
+import javax.jms.QueueBrowser;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.naming.InitialContext;
@@ -43,7 +47,7 @@ public class JmsManager {
 		Destination queue = (Destination) context.lookup("financial");
 		MessageConsumer consumer = session.createConsumer(queue);
 		
-		message = consumer.receive(5000);
+		message = consumer.receive(1000);
 		
 		return message;
 	}
@@ -93,6 +97,17 @@ public class JmsManager {
 		}
 		
 		return this;
+	}
+
+	public Enumeration getEnumeration() throws JMSException, NamingException {
+		Session session;
+		
+		session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+		Destination queue = (Destination) context.lookup("financial");
+		QueueBrowser browser = session.createBrowser((Queue)queue);
+		Enumeration enumeration = browser.getEnumeration();
+		
+		return enumeration;
 	}
 
 }
