@@ -62,11 +62,9 @@ public class JmsManagerTest {
 	}
 
 	@Test
+	@SuppressWarnings("rawtypes")
 	public void testJmsgetEnumeration() throws NamingException, JMSException {
 		Enumeration enumeration = jmsManager.startConnection()
-			.sendTexMessage("okok")
-			.sendTexMessage("okok2")
-			.sendTexMessage("okok3")
 			.getEnumeration();
 		
 		assertNotNull(enumeration);
